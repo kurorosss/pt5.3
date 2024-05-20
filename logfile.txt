@@ -1,0 +1,7 @@
+2024-05-20 13:22:01,161 - root - ERROR - Ошибка при работе с PostgreSQL: connection to server at "192.168.37.137", port 5432 failed: No route to host
+	Is the server running on that host and accepting TCP/IP connections?
+
+2024-05-20 13:22:09,201 - telegram.ext.updater - INFO - Received signal 2 (SIGINT), stopping...
+2024-05-20 13:22:11,264 - telegram.ext.updater - WARNING - Exiting immediately!
+2024-05-20 13:49:50,282 - telegram.ext.updater - INFO - Received signal 2 (SIGINT), stopping...
+2024-05-20 13:49:52,305 - telegram.ext.updater - WARNING - Exiting immediately!

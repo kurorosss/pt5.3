@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  db:
+    build: ./db_image
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: your_database
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  db_slave:
+    build: ./db_repl_image
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_USER=${POSTGRESQL_REPL_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRESQL_REPL_PASSWORD}
+    volumes:
+      - db_slave_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    command: |
+      bash -c "
+      until pg_basebackup -R -h db -U ${POSTGRESQL_REPL_USERNAME} -D /var/lib/postgresql/data -P
+      do
+        echo 'Waiting for primary to connect...'
+        sleep 1s
+      done
+      echo 'Backup done, starting replica...'
+      chmod 0700 /var/lib/postgresql/data
+      echo 'Chmod is completed'
+      postgres
+      "
+    restart: always
+
+  bot:
+    build: ./bot_image
+    depends_on:
+      - db
+    environment:
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=your_database
+    volumes:
+      - ./logfile.txt:/app/logfile.txt
+    ports:
+      - "8080:8080"
+
+volumes:
+  db_data:
+  db_slave_data:
